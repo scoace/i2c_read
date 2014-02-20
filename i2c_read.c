@@ -1,4 +1,4 @@
-// Frontend for i2c ethersex
+// Written for Atmega32 I2C Interface
 
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
