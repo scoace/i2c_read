@@ -32,7 +32,6 @@ int main(int argc, char *argv[]) {
 	int Debug = 1;
 	int opt;
 
-
 	if (argc == 1) {
 		print_usage(1);
 	}
@@ -63,7 +62,6 @@ int main(int argc, char *argv[]) {
 	}
 	// Start of Program
 
-
 	if ((File = open(Device, O_RDWR)) < 0) 					// I²C aktivieren
 			{
 		printf("I²C Modul kann nicht geladen werden!\n");
@@ -74,7 +72,7 @@ int main(int argc, char *argv[]) {
 		printf("Deviceadresse wurde nicht gefunden!\n");
 		exit(1);
 	}
-
+	// Read 64bit counter at address [0]
 	for (i = 0; i < 4; i++) {
 		Data[i] = i2c_smbus_read_word_data(File, i);
 		if (Data[i] < 0) {
@@ -84,9 +82,17 @@ int main(int argc, char *argv[]) {
 		}
 
 	}
-	long zaehler = (unsigned long)(Data[0] << 24) | (Data[1] << 16) | (Data[2] << 8) | Data[3];
+	long zaehler = (unsigned long) (Data[0] << 24) | (Data[1] << 16)
+			| (Data[2] << 8) | Data[3];
 	//long zaehler = *(long*)&Data[0];
-	printf("\nZähler: %u",zaehler);
+	printf("\nZähler: %u", zaehler);
+	// Read 16 bit counter at address [4]
+	Data[4] = i2c_smbus_read_word_data(File, 4);
+	if (Data[i] < 0) {
+		printf("Error reading 16bit Counter\n");
+	}
+	printf("\n16bit Zähler: %d", Data[4]);
+
 	printf("\n");
 	close(File);
 	return 0;
