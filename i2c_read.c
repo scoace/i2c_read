@@ -26,12 +26,12 @@ int main(int argc, char *argv[]) {
 	char Device[] = "/dev/i2c-1";
 	char Ethersex = 0x08;
 	char CMD[50] = "";
-	int len;
-	char Data[Buffer];
+
+	__u8 Data[Buffer];
 	int i;
 	int Debug = 1;
 	int opt;
-	unsigned int zaehler;
+
 
 	if (argc == 1) {
 		print_usage(1);
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 		printf("\nDevice: %s,Command: %s\n", Device, CMD);
 	}
 	// Start of Program
-	len = strlen(CMD);
+
 
 	if ((File = open(Device, O_RDWR)) < 0) 					// I²C aktivieren
 			{
@@ -75,36 +75,18 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	/*if (write(File, CMD, len + 1) != len + 1) {
-	 printf("Fehler beim Schreiben der Daten!\n");
-	 return -1;
-	 }
-	 //sleep(1);
-	 Data[0]=0;
-	 if (read(File, Data, Buffer) != Buffer) {
-	 printf("Fehler beim Lesen der Daten!\n");
-	 return -1;
-	 } else {
-	 if (Debug) {
-	 printf("Buffer:\n");
-	 // Werte vom Buffer lesen
-	 for (i = 0; i < 4; i++) {
-	 printf("%2d: 0x%0x ", i, (Data[i] & 0xff));
-
-	 }
-	 printf("\n");
-	 }
-
-	 }*/
 	for (i = 0; i < 4; i++) {
 		Data[i] = i2c_smbus_read_word_data(File, i);
 		if (Data[i] < 0) {
 			printf("Error\n");
 		} else {
-			printf("%d: 0x%0x ",i, Data[i]);
+			printf("%d: 0x%0x ", i, Data[i]);
 		}
-		
+
 	}
+	long zaehler = (unsigned long)(Data[0] << 24) | (Data[1] << 16) | (Data[2] << 8) | Data[3];
+	//long zaehler = *(long*)&Data[0];
+	printf("\nZähler: %u",zaehler);
 	printf("\n");
 	close(File);
 	return 0;
